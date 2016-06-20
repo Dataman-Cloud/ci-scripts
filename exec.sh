@@ -65,11 +65,13 @@ get_instancecount(){
 
 deploy_marathon_app(){
     # 生成ENV file
-    wget $CONFIGSERVER/config/jenkins/generate_config.sh -O generate_config.sh && bash generate_config.sh $TASKENV $SERVICE
+    #wget $CONFIGSERVER/config/jenkins/generate_config.sh -O generate_config.sh && bash generate_config.sh $TASKENV $SERVICE
+    bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
 
     # 生成最终deploy.sh
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
-    wget $CONFIGSERVER/config/jenkins/$SERVICE/deploy.sh -O $TASKENV-$SERVICE-deploy-ready.sh
+    # wget $CONFIGSERVER/config/jenkins/$SERVICE/deploy.sh -O $TASKENV-$SERVICE-deploy-ready.sh
+    cp $SERVICE/deploy/deploy.sh -O $TASKENV-$SERVICE-deploy-ready.sh
     sed -n '1,/"env"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
     cat $TASKENV-$SERVICE-env | sed 's/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
     echo "" >>  $TASKENV-$SERVICE-deploy-run.sh
@@ -231,8 +233,8 @@ generate_image_name(){
 }
 
 code_compile() {
-    if [ -f "$SERVICE/deploy/ci-scripts/compile.sh"]; then
-        . $SERVICE/deploy/ci-scripts/compile.sh
+    if [ -f "$SERVICE/deploy/compile.sh"]; then
+        . $SERVICE/deploy/compile.sh
         docker run --rm -e SERVICE="$SERVICE" -e GO15VENDOREXPERIMENT=1 -e GOPATH="/usr/local/go" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x compile.sh"
     fi
 	[ $? -eq 0 ] || error "build $SERVICE failed."
