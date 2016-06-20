@@ -65,13 +65,11 @@ get_instancecount(){
 
 deploy_marathon_app(){
     # 生成ENV file
-    #wget $CONFIGSERVER/config/jenkins/generate_config.sh -O generate_config.sh && bash generate_config.sh $TASKENV $SERVICE
     bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
 
     # 生成最终deploy.sh
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
-    # wget $CONFIGSERVER/config/jenkins/$SERVICE/deploy.sh -O $TASKENV-$SERVICE-deploy-ready.sh
-    cp $SERVICE/deploy/deploy.sh -O $TASKENV-$SERVICE-deploy-ready.sh
+    cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
     sed -n '1,/"env"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
     cat $TASKENV-$SERVICE-env | sed 's/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
     echo "" >>  $TASKENV-$SERVICE-deploy-run.sh
@@ -92,7 +90,6 @@ deploy_marathon_app(){
 	echo
     done
 
-    cat $TASKENV-$SERVICE-deploy-run.sh
     bash -x $TASKENV-$SERVICE-deploy-run.sh
 
     count=0
