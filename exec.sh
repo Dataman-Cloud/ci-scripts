@@ -231,65 +231,10 @@ generate_image_name(){
 }
 
 code_compile() {
-    # 获取 编译代码环境的镜像(比如go环境，python环境)
-    code_compile_image=`tail -n 1 $SERVICE/dockerfiles/Dockerfile_compile_env`
-    code_compile_image=${code_compile_image#*#}
-    # 生成entrypoint.sh
-	if [ "$SERVICE" = "harbor" ];then
-        cat > /data/build/entrypoint.sh << EOF
-		mkdir -p /usr/local/go/src/github.com/vmware
-		rm -rf /usr/local/go/src/github.com/vmware/$SERVICE
-		cp -r $SERVICE /usr/local/go/src/github.com/vmware/
-		cd /usr/local/go/src/github.com/vmware/$SERVICE
-		go build
-EOF
-	elif echo "$SERVICE" | grep "metrics" &>/dev/null ;then
-        cat > /data/build/entrypoint.sh << EOF
-        #!/bin/bash
-		mkdir -p /usr/local/go/src/github.com/Dataman-Cloud
-		rm -rf /usr/local/go/src/github.com/Dataman-Cloud/$SERVICE
-		cp -r $SERVICE /usr/local/go/src/github.com/Dataman-Cloud/
-		cp -r $SERVICE/vendor/*  /usr/local/go/src/
-		cd /usr/local/go/src/github.com/Dataman-Cloud/$SERVICE
-		go build .
-EOF
-	elif [ "$SERVICE" = "drone" ];then
-        cat > /data/build/entrypoint.sh << EOF
-        #!/bin/bash
-        mkdir -p /usr/local/go/src/github.com/$SERVICE
-		rm -rf /usr/local/go/src/github.com/$SERVICE/$SERVICE
-	    cp -r $SERVICE /usr/local/go/src/github.com/$SERVICE/
-        cd /usr/local/go/src/github.com/$SERVICE/$SERVICE
-		/usr/bin/make gen && /usr/bin/make build_static
-EOF
-	elif [ "$SERVICE" = "omega-cluster" ] || [ "$SERVICE" = "webpage" ] || [ "$SERVICE" = "frontend" ];then
-		echo "$SERVICE"
-	elif echo "$SERVICE" | grep "static" &>/dev/null ;then
-        cat > /data/build/entrypoint.sh << EOF
-        #!/bin/bash
-		rm -rf /usr/local/go/src/github.com/$SERVICE
-        cp -r $SERVICE /usr/local/go/src/github.com/
-        cd /usr/local/go/src/github.com/
-EOF
-	else
-        cat > /data/build/entrypoint.sh << EOF
-        #!/bin/bash
-		mkdir -p /usr/local/go/src/github.com/Dataman-Cloud
-		rm -rf /usr/local/go/src/github.com/Dataman-Cloud/$SERVICE
-        cp -r $SERVICE /usr/local/go/src/github.com/Dataman-Cloud/
-	    cd /usr/local/go/src/github.com/Dataman-Cloud/$SERVICE
-		make build
-        ls -l omega-billing
-        cp omega-billing /data/build/$SERVICE/
-        ls /data/build/$SERVICE/
-        ls -l /data/build/$SERVICE/$SERVICE
-EOF
-	fi
-
-    chmod +x /data/build/entrypoint.sh
-    cat /data/build/entrypoint.sh
-    ls -F /data/build
-    docker run --rm -e SERVICE="$SERVICE" -e GO15VENDOREXPERIMENT=1 -e GOPATH="/usr/local/go" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x entrypoint.sh"
+    if [ -f "$SERVICE/deploy/compile.sh"]; then
+        . $SERVICE/deploy/compile.sh
+        docker run --rm -e SERVICE="$SERVICE" -e GO15VENDOREXPERIMENT=1 -e GOPATH="/usr/local/go" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x compile.sh"
+    fi
 	[ $? -eq 0 ] || error "build $SERVICE failed."
 }
 
