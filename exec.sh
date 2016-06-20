@@ -249,7 +249,7 @@ deploy(){
 	    # 生成服务镜像名称
 	    generate_image_name
 	    # 下载服务代码
-	    download_code
+		# download_code
 
         code_compile
 
