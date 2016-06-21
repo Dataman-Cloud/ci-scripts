@@ -74,7 +74,6 @@ deploy_marathon_app(){
     cat $TASKENV-$SERVICE-env | sed 's/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
     echo "" >>  $TASKENV-$SERVICE-deploy-run.sh
     sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' >> $TASKENV-$SERVICE-deploy-run.sh
-    rm -f $TASKENV-$SERVICE-deploy-ready.sh $TASKENV-$SERVICE-env
 
     # deploy marathon app
     curl -v -X DELETE "$MARATHON_API_URL/v2/apps/shurenyun-$TASKENV-$SERVICE"
@@ -102,6 +101,9 @@ deploy_marathon_app(){
         [ $count -gt 5  ] && error "deploy $TASKENV-$SERVICE-deploy.sh failed."
 	echo
     done
+
+    # 清理程序包及生成的文件
+    rm -rf $TASKENV-$SERVICE-deploy-ready.sh $TASKENV-$SERVICE-env $TASKENV-$SERVICE-deploy-run.sh $SERVICE $SERVICE.tar.gz
 }
 put_marathon_app(){
     wget $CONFIGSERVER/config/jenkins/$SERVICE/put.sh -O $TASKENV-$SERVICE-put.sh || error "wget or execute $TASKENV-$SERVICE-put.sh failed."
