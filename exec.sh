@@ -65,10 +65,16 @@ get_instancecount(){
 
 deploy_marathon_app(){
     # 生成ENV file
-    bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
+    if [ "$SERVICE" = "omega-es" ] || [ "$SERVICE" = "omega-app"] || [ "$SERVICE" = "omega-cluster"]; then
+        # 下划线 中横线问题
+        bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV ${SERVICE/-/_}
+        wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_${SERVICE/-/_}/env -O $TASKENV-$SERVICE-env
+    else
+        bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
+        wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
+    fi
 
     # 生成最终deploy.sh
-    wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
     cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
     sed -n '1,/"env"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
     cat $TASKENV-$SERVICE-env | sed 's/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
