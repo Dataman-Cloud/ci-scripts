@@ -64,11 +64,6 @@ get_instancecount(){
 }
 
 deploy_marathon_app(){
-    # 删除 submodules
-    if [ -d $SERVICE/deploy/ci-scripts ]
-        rm -rf $SERVICE/deploy/ci-scripts
-    fi
-    git clone https://github.com/Dataman-Cloud/ci-scripts.git $SERVICE/deploy/ci-scripts
     # 生成ENV file
     if [ "$SERVICE" = "omega-es" ] || [ "$SERVICE" = "omega-app"] || [ "$SERVICE" = "omega-cluster"]; then
         # 下划线 中横线问题
