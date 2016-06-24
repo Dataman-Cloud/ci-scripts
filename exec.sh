@@ -65,14 +65,8 @@ get_instancecount(){
 
 deploy_marathon_app(){
     # 生成ENV file
-    if [ "$SERVICE" = "omega-es" ] || [ "$SERVICE" = "omega-app"] || [ "$SERVICE" = "omega-cluster"]; then
-        # 下划线 中横线问题
-        bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV ${SERVICE/-/_}
-        wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_${SERVICE/-/_}/env -O $TASKENV-$SERVICE-env
-    else
-        bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
-        wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
-    fi
+    bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
+    wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
 
     # 生成最终deploy.sh
     cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
