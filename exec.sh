@@ -234,7 +234,7 @@ generate_image_name(){
 code_compile() {
     if [ -f "$SERVICE/deploy/compile.sh" ]; then
         . $SERVICE/deploy/compile.sh
-        docker run --rm -e SERVICE="$SERVICE" -e GO15VENDOREXPERIMENT=1 -e GOPATH="/usr/local/go" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x compile.sh"
+        docker run --rm -e SERVICE="$SERVICE" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x compile.sh"
     fi
 	[ $? -eq 0 ] || error "build $SERVICE failed."
 }
