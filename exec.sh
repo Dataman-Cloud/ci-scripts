@@ -73,13 +73,6 @@ deploy_marathon_app(){
     sed -n '1,/"env"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
     cat $TASKENV-$SERVICE-env | sed 's/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
     echo "" >>  $TASKENV-$SERVICE-deploy-run.sh
-    # 判断env{}中是否有内容，没有内容env的的内容最后一行去掉逗号
-    sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' | head -n 1
-    fix-env-content=$(sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' | head -n 1)
-    fix-env-content=`echo ${fix-env-content// /}`
-    if [ "$fix-env-content" = "},"]; then
-        sed -i '$s/,//' $TASKENV-$SERVICE-deploy-run.sh
-    fi
     sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' >> $TASKENV-$SERVICE-deploy-run.sh
 
     # deploy marathon app
