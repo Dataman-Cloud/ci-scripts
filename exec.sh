@@ -69,14 +69,14 @@ deploy_marathon_app(){
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
     # source file 自动 export
     set -a
-    cat $TASKENV-$SERVICE-env | sed 's/=/="/;s/$/"/' > /tmp/$TASKENV-$SERVICE-env-variables
+    cat $TASKENV-$SERVICE-env | sed '/^$/d;s/=/="/;s/$/"/' > /tmp/$TASKENV-$SERVICE-env-variables
     . /tmp/$TASKENV-$SERVICE-env-variables && rm -f /tmp/$TASKENV-$SERVICE-env-variables
     set +a
 
     # 生成最终deploy.sh
     cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
     sed -n '1,/"env"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
-    cat $TASKENV-$SERVICE-env | sed 's/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
+    cat $TASKENV-$SERVICE-env | sed '/^$/d;s/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
     echo "" >>  $TASKENV-$SERVICE-deploy-run.sh
     sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' >> $TASKENV-$SERVICE-deploy-run.sh
 
