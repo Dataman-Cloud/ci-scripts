@@ -71,7 +71,7 @@ deploy_marathon_app(){
     # 生成最终deploy.sh
     cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
     cat $TASKENV-$SERVICE-env | sed 's/=/="/;s/$/"/' > $TASKENV-$SERVICE-env-variables
-    . $TASKENV-$SERVICE-env-variables
+    . $TASKENV-$SERVICE-env-variables && rm -f $TASKENV-$SERVICE-env-variables
     sed -n '1,/"env"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
     cat $TASKENV-$SERVICE-env | sed 's/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
     echo "" >>  $TASKENV-$SERVICE-deploy-run.sh
