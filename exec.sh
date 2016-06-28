@@ -67,6 +67,7 @@ deploy_marathon_app(){
     # 生成ENV file
     bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
+    . $TASKENV-$SERVICE-env
 
     # 生成最终deploy.sh
     cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
