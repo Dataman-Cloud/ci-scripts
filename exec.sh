@@ -69,6 +69,8 @@ deploy_marathon_app(){
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
     cat $TASKENV-$SERVICE-env | sed 's/=/="/;s/$/"/' > /tmp/$TASKENV-$SERVICE-env-variables
     . /tmp/$TASKENV-$SERVICE-env-variables && rm -f /tmp/$TASKENV-$SERVICE-env-variables
+    echo 'test***********'
+    echo $APP_PORT
 
     # 生成最终deploy.sh
     cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
