@@ -67,10 +67,11 @@ deploy_marathon_app(){
     # 生成ENV file
     bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
+    # source file 自动 export
+    set -a
     cat $TASKENV-$SERVICE-env | sed 's/=/="/;s/$/"/' > /tmp/$TASKENV-$SERVICE-env-variables
     . /tmp/$TASKENV-$SERVICE-env-variables && rm -f /tmp/$TASKENV-$SERVICE-env-variables
-    echo 'test***********'
-    echo $APP_PORT
+    set +a
 
     # 生成最终deploy.sh
     cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
