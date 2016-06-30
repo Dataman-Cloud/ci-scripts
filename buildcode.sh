@@ -34,7 +34,7 @@ web(){
         fi
 
         # compress
-        docker run -d --name "$docker_name" -v "$compress_path":/usr/src/myapp -w /usr/src/myapp node-gulp:4.0 /bin/bash compress.sh
+        docker run -d --name "$docker_name" -v "$compress_path":/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
 
         if [ $? -ne 0 ]; then
                 echo "Compress web error." && exit 1
