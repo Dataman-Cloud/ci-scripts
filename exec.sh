@@ -66,7 +66,7 @@ get_instancecount(){
 deploy_marathon_app(){
     # 生成ENV file
     #bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
-    curl -L $CONFIGSERVER/config/$TASKENV/cfgfile_"$TASKENV"_"$SERVICE"/env
+    curl $CONFIGSERVER/generate_config/$TASKENV/$SERVICE
     [ $? -ne 0 ] && error "Generate configuration files failed ..."
 
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
