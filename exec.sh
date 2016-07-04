@@ -244,7 +244,15 @@ code_compile() {
         . $SERVICE/deploy/compile.sh
         docker run --rm -e SERVICE="$SERVICE" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x compile.sh"
     fi
-	[ $? -eq 0 ] || error "build $SERVICE failed."
+    [ $? -eq 0 ] || error "build $SERVICE failed."
+    if [ $SERVICE = "webpage" ] || [ $SERVICE = "frontend" ];then
+        docker run --rm -d -v /tmp/codebuild/$SERVICE:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
+    fi
+    if [ $? -eq 0 ]; then
+        tar -zcvf $SERVICE.tar.gz $SERVICE	  
+    else
+        error "compress $SERVICE failed."
+    fi
 }
 
 deploy(){
