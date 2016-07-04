@@ -246,7 +246,7 @@ code_compile() {
     fi
     [ $? -eq 0 ] || error "build $SERVICE failed."
     if [ $SERVICE = "webpage" ] || [ $SERVICE = "frontend" ];then
-        docker run -d --name compress-"$SERVICE" --rm -v /tmp/codebuild/$SERVICE:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
+        docker run -d --name compress-"$SERVICE" -v /tmp/codebuild/$SERVICE:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
     fi
     docker rmi demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
     docker rm -f compress-"$SERVICE"
