@@ -66,8 +66,8 @@ get_instancecount(){
 deploy_marathon_app(){
     # 生成ENV file
     #bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
-    $TASKENV_$SERVICE_updateENV=`curl $codeci_api_url/generate_config/$TASKENV/$SERVICE`
-    [ $TASKENV_$SERVICE_updateENV = "error" ] && error "Generate configuration files failed ..."
+    updateENV=`curl $codeci_api_url/generate_config/$TASKENV/$SERVICE`
+    [ $updateENV = "error" ] && error "Generate configuration files failed ..."
 
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
     # source file 自动 export
