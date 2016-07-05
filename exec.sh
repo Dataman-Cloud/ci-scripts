@@ -251,7 +251,8 @@ code_compile() {
         docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
     fi
     if [ $? -eq 0 ]; then
-        tar -zcvf $SERVICE.tar.gz $SERVICE	  
+        rm -rf $SERVICE/.git $SERVICE/deploy/ci-scripts/.git $SERVICE.tar.gz
+        tar -zcvf $SERVICE.tar.gz $SERVICE
     else
         error "compress $SERVICE failed."
     fi
