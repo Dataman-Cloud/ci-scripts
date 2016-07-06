@@ -253,10 +253,8 @@ code_compile() {
             compress_path=/tmp/codebuild/$SERVICE
         fi
 
-        docker run --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh || (docker rm -f compress-$SERVICE; exit 1)
-        [ $? -eq 0 ] || error "compress $SERVICE failed."
-        docker rm -f compress-"$SERVICE"
-        docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
+        # 压缩js,无论压缩成功或者失败都清理镜像和容器。失败并且退出shell执行
+        docker run --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh && { docker rm -f compress-$SERVICE;docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000; } || { docker rm -f compress-"$SERVICE";docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000; error "compress $SERVICE failed."; }
     fi
     if [ $? -eq 0 ]; then
         rm -rf $SERVICE/.git $SERVICE/deploy/ci-scripts/.git $SERVICE.tar.gz
