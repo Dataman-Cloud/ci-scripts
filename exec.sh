@@ -247,7 +247,6 @@ code_compile() {
         return 0
     fi
     if [ $SERVICE = "webpage" ] || [ $SERVICE = "frontend" ];then
-        docker ps | grep compress-$SERVICE 2>&1 > /dev/null && docker rm -f compress-"$SERVICE"
         docker run --name compress-"$SERVICE" -v /tmp/codebuild/$SERVICE:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
         docker rm -f compress-"$SERVICE"
         docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
