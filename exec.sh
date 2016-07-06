@@ -242,8 +242,9 @@ generate_image_name(){
 code_compile() {
     if [ -f "$SERVICE/deploy/compile.sh" ]; then
         . $SERVICE/deploy/compile.sh
-        docker run --rm -e SERVICE="$SERVICE" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x compile.sh"
+        docker run --rm --name build-"$SERVICE" -e SERVICE="$SERVICE" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "bash -x compile.sh"
         [ $? -eq 0 ] || error "build $SERVICE failed."
+        docker rmi -f $code_compile_image
         return 0
     fi
     if [ $SERVICE = "webpage" ] || [ $SERVICE = "frontend" ];then
@@ -252,9 +253,9 @@ code_compile() {
         else
             compress_path=/tmp/codebuild/$SERVICE
         fi
-
-        # 压缩js,无论压缩成功或者失败都清理镜像和容器。失败并且退出shell执行
-        docker run --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh && { docker rm -f compress-$SERVICE;docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000; } || { docker rm -f compress-"$SERVICE";docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000; error "compress $SERVICE failed."; }
+        docker run --rm --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
+        [ $? -eq 0 ] || error "compress $SERVICE failed."
+        docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
     fi
     if [ $? -eq 0 ]; then
         rm -rf $SERVICE/.git $SERVICE/deploy/ci-scripts/.git $SERVICE.tar.gz
