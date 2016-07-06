@@ -252,10 +252,8 @@ code_compile() {
         else
             compress_path=/tmp/codebuild/$SERVICE
         fi
-        docker ps -a
-        docker rm -f compress-$SERVICE
-        docker ps | grep compress-$SERVICE && docker rm -f /compress-$SERVICE
-        docker run --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
+
+        docker run --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh || (docker rm -f compress-$SERVICE; exit 1)
         docker rm -f compress-"$SERVICE"
         docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
     fi
