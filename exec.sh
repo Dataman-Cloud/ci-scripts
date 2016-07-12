@@ -63,12 +63,14 @@ get_instancecount(){
     echo "$instancecount"
 }
 
-deploy_marathon_app(){
+config_update(){
     # 生成ENV file
     #bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
     updateENV=`curl $codeci_api_url/generate_config/$TASKENV/$SERVICE`
     [ $updateENV = "error" ] && error "Generate configuration files failed ..."
+}
 
+deploy_marathon_app(){
     wget $CONFIGSERVER/config/$TASKENV/config/cfgfile_"$TASKENV"_"$SERVICE"/env -O $TASKENV-$SERVICE-env
     # source file 自动 export
     set -a
@@ -291,6 +293,7 @@ deploy(){
 	    #docker rmi "$SERVICE_IMAGE"
     fi
 
+    config_update
     updateflag=${COMMITIDTAG##*.}
     if [ ${updateflag%%-*} != "hotfix" ] || [ $TASKENV != "dev" ]; then
         # deploy marathon app
