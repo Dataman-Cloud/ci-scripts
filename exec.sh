@@ -291,7 +291,8 @@ deploy(){
 	    #docker rmi "$SERVICE_IMAGE"
     fi
 
-    if [ ${${COMMITIDTAG##*.}%%-*} != "hotfix" ]; then
+    updateflag=${COMMITIDTAG##*.}
+    if [ ${updateflag%%-*} != "hotfix" ]; then
         # deploy marathon app
         deploy_marathon_app
     fi
