@@ -292,7 +292,7 @@ deploy(){
     fi
 
     updateflag=${COMMITIDTAG##*.}
-    if [ ${updateflag%%-*} != "hotfix" ]; then
+    if [ ${updateflag%%-*} != "hotfix" ] || [ $TASKENV != "dev" ]; then
         # deploy marathon app
         deploy_marathon_app
     fi
