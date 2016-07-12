@@ -162,12 +162,12 @@ get_committag(){
 
         # is force update
         if [ "x$FORCE" = "xtrue" ] ;then
-	    if [ "x$TASKENV" = "xdev" ] ;then
-	            export FORCEPULLIMAGE=true
-	    fi
-	else
+            if [ "x$TASKENV" = "xdev" ] ;then
+                    export FORCEPULLIMAGE=true
+            fi
+        else
                 oldtag=`curl $codeci_api_url/getfinaltag/$TASKENV/$SERVICE`
-                if [ "$prodtag" = null ]; then
+                if [ "$oldtag" = null ]; then
                     error "Get $env tag failed!"
                 else
                     echo "$TASKENV tag is *************** $oldtag ***************"
