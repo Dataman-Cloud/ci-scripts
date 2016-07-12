@@ -68,6 +68,7 @@ config_update(){
     #bash $SERVICE/deploy/ci-scripts/generate_config.sh $TASKENV $SERVICE
     updateENV=`curl $codeci_api_url/generate_config/$TASKENV/$SERVICE`
     [ $updateENV = "error" ] && error "Generate configuration files failed ..."
+    echo
 }
 
 deploy_marathon_app(){
