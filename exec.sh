@@ -291,11 +291,13 @@ deploy(){
 	    #docker rmi "$SERVICE_IMAGE"
     fi
 
+    if [ ${${COMMITIDTAG##*.}%%-*} != "hotfix" ]; then
         # deploy marathon app
         deploy_marathon_app
+    fi
 
-        # upload version
-        upload_version
+    # upload version
+    upload_version
 
 }
 
