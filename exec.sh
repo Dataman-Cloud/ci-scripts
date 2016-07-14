@@ -87,6 +87,7 @@ deploy_marathon_app(){
     sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' >> $TASKENV-$SERVICE-deploy-run.sh
 
     # deploy marathon app
+    set +e
     grep " PUT " $TASKENV-$SERVICE-deploy-run.sh 2>/dev/null
     # 判断是否是 put 发布
     if [ $? -ne 0 ]; then
@@ -102,6 +103,7 @@ deploy_marathon_app(){
         echo
         done
     fi
+    set -e
     bash -x $TASKENV-$SERVICE-deploy-run.sh
 
     count=0
