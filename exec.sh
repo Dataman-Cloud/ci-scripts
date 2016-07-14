@@ -87,19 +87,21 @@ deploy_marathon_app(){
     sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' >> $TASKENV-$SERVICE-deploy-run.sh
 
     # deploy marathon app
-    curl -v -X DELETE "$MARATHON_API_URL/v2/apps/shurenyun-$TASKENV-$SERVICE"
-
-    count=0
-    instancecount="1"
-    while [ ! -z "$instancecount" ]
-    do
-        sleep 1
-        instancecount=`get_instancecount`
-        let count=count+1
-        [ $count -gt 5 ] && error "delete shurenyun-$TASKENV-$SERVICE failed."
-	echo
-    done
-
+    grep " PUT " $TASKENV-$SERVICE-deploy-run.sh 2>/dev/null
+    # 判断是否是 put 发布
+    if [ $? -ne 0 ]; then
+        curl -v -X DELETE "$MARATHON_API_URL/v2/apps/shurenyun-$TASKENV-$SERVICE"
+        count=0
+        instancecount="1"
+        while [ ! -z "$instancecount" ]
+        do
+            sleep 1
+            instancecount=`get_instancecount`
+            let count=count+1
+            [ $count -gt 5 ] && error "delete shurenyun-$TASKENV-$SERVICE failed."
+        echo
+        done
+    fi
     bash -x $TASKENV-$SERVICE-deploy-run.sh
 
     count=0
@@ -110,9 +112,8 @@ deploy_marathon_app(){
         instancecount=`get_instancecount`
         let count=count+1
         [ $count -gt 5  ] && error "deploy $TASKENV-$SERVICE-deploy.sh failed."
-	echo
+    echo
     done
-
     # 清理程序包及生成的文件
     rm -rf $TASKENV-$SERVICE-deploy-ready.sh $TASKENV-$SERVICE-env $TASKENV-$SERVICE-deploy-run.sh $SERVICE $SERVICE.tar.gz
 }
