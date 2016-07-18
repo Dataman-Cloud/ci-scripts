@@ -87,6 +87,7 @@ deploy_marathon_app(){
     sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' >> $TASKENV-$SERVICE-deploy-run.sh
 
     # deploy marathon app
+    # 出现错误继续执行
     set +e
     grep " PUT " $TASKENV-$SERVICE-deploy-run.sh 2>/dev/null
     # 判断是否是 put 发布
@@ -261,6 +262,9 @@ code_compile() {
         fi
         docker run --rm --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
         [ $? -eq 0 ] || error "compress $SERVICE failed."
+        set +e
+        docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
+        set -e
     fi
     if [ $? -eq 0 ]; then
         rm -rf $SERVICE/.git $SERVICE/deploy/ci-scripts/.git $SERVICE.tar.gz
