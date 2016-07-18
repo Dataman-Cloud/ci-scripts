@@ -261,7 +261,6 @@ code_compile() {
         fi
         docker run --rm --name compress-"$SERVICE" -v $compress_path:/usr/src/myapp -w /usr/src/myapp demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000 /bin/bash compress.sh
         [ $? -eq 0 ] || error "compress $SERVICE failed."
-        docker rmi -f demoregistry.dataman-inc.com/library/node-gulp:v0.1.063000
     fi
     if [ $? -eq 0 ]; then
         rm -rf $SERVICE/.git $SERVICE/deploy/ci-scripts/.git $SERVICE.tar.gz
