@@ -249,7 +249,7 @@ generate_image_name(){
 code_compile() {
     if [ -f "$SERVICE/deploy/compile.sh" ]; then
         . $SERVICE/deploy/compile.sh
-        docker run --rm --name build-"$SERVICE" -e SERVICE="$SERVICE" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "yum install -y git && bash -x compile.sh"
+        docker run --rm --name build-"$SERVICE" -e SERVICE="$SERVICE" -v /tmp/codebuild:/data/build -w="/data/build" $code_compile_image /bin/bash -c "yum install -y git ; export GOPATH=/usr/local/go; go get github.com/gin-gonic/gin ; go get github.com/gorilla/websocket && bash -x compile.sh"
         [ $? -eq 0 ] || error "build $SERVICE failed."
         docker rmi -f $code_compile_image
         return 0
