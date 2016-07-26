@@ -53,10 +53,6 @@ fi
 #if [ $service = "webpage" ] || [ $service = "frontend" ];then
 #        web
 #fi
-if [ $service = "omega-haproxyctl" ]; then
-    cd $codepath && /bin/tar -zcvf $service.tar.gz $service
-    return
-fi
 rm -rf $codepath/$service/deploy/ci-scripts
 cp -r /data/sourcecode/ci-scripts $codepath/$service/deploy/
 cd $codepath && /bin/tar -zcvf $service.tar.gz $service
