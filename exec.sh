@@ -203,10 +203,11 @@ docker_build(){
     echo "####test####"
     ls `pwd`
     ls `pwd`/$SERVICE
+    rm -rf "$SERVICE"_Dockerfile_runtime
     mv $SERVICE/dockerfiles/Dockerfile_runtime "$SERVICE"_Dockerfile_runtime
     echo "Start to build image of ${SERVICE_IMAGE}......"
     docker build --no-cache --file "$SERVICE"_Dockerfile_runtime -t "${SERVICE_IMAGE}" .
-
+    rm -rf "$SERVICE"_Dockerfile_runtime
     if [ $? -eq 0 ]; then
         count=0
         while [ $count -lt 3 ]
