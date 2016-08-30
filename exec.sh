@@ -243,8 +243,10 @@ generate_image_name(){
 		BASEOS=alpine3.2
 	fi
 
+	REGISTRY_NAMESPACE=${REGISTRY_NAMESPACE:-shurenyun}
+	
 	BASEOS="${BASEOS:-centos7}"
-	export SERVICE_IMAGE="$registry_baseurl/shurenyun/$BASEOS-$SERVICE:${COMMITIDTAG}"
+	export SERVICE_IMAGE="$registry_baseurl/$REGISTRY_NAMESPACE/$BASEOS-$SERVICE:${COMMITIDTAG}"
 }
 
 code_compile() {
@@ -378,6 +380,49 @@ web_deploy(){
     docker_build
     # deploy
     put_marathon_app
+    # upload version
+    upload_version
+}
+
+docker_simple_build(){
+        # 下载registry认证文件
+        down_verify
+    #Dockerfile download
+    if [ ! -f $SERVICE/dockerfiles/Dockerfile_runtime ]; then
+        error "Dockerfile_runtime not exist."
+    fi
+    echo "####test####"
+    ls `pwd`
+    ls `pwd`/$SERVICE
+    cd $SERVICE/dockerfiles
+    echo "Start to build image of ${SERVICE_IMAGE}......"
+    docker build --no-cache --file Dockerfile_runtime -t "${SERVICE_IMAGE}" .
+    rm -rf Dockerfile_runtime
+    if [ $? -eq 0 ]; then
+        count=0
+        while [ $count -lt 3 ]
+        do
+            docker push "${SERVICE_IMAGE}"
+            if [ $? -eq 0 ]; then
+                    docker ps | grep "${SERVICE_IMAGE}" 2>/dev/null || docker rmi -f "${SERVICE_IMAGE}"
+                    break
+            fi
+
+            [ $count -eq 3 ] && error "Push $SERVICE dockerimage failed."
+            sleep 1
+        done
+    else
+        error "Build $SERVICE dockerimage failed."
+    fi
+}
+
+docker_build_update(){
+    # check committag
+    check_committag
+    # 生成镜像名称
+    generate_image_name
+    # build image
+    docker_simple_build
     # upload version
     upload_version
 }

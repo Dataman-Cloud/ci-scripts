@@ -54,6 +54,7 @@ fi
 #        web
 #fi
 rm -rf $codepath/$service/deploy/ci-scripts
+mkdir -p $codepath/$service/deploy
 cp -r /data/sourcecode/ci-scripts $codepath/$service/deploy/
 cd $codepath && /bin/tar -zcvf $service.tar.gz $service
 rm -rf $codepath/$service/deploy/ci-scripts
