@@ -27,7 +27,8 @@ export FORCEPULLIMAGE="${FORCEPULLIMAGE:-false}"
 export MARATHON_API_URL="http://10.3.33.6:8080"
 codeci_api_url="http://10.3.6.6:8100"
 codepath="/data/sourcecode"
-
+# logstash 地址
+syslog_address="tcp://10.3.35.20:5011"
 
 error(){
         error="error."
@@ -80,11 +81,17 @@ deploy_marathon_app(){
     set +a
 
     # 生成最终deploy.sh
-    cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
+    \cp -f $SERVICE/deploy/deploy.sh $TASKENV-$SERVICE-deploy-ready.sh
     sed -n '1,/"env"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
     cat $TASKENV-$SERVICE-env | sed '/^$/d;s/^/                    "/;s/=/": "/;s/$/",/' >> $TASKENV-$SERVICE-deploy-run.sh
     echo "" >>  $TASKENV-$SERVICE-deploy-run.sh
     sed -n '/"env"/,$p' $TASKENV-$SERVICE-deploy-ready.sh | grep -v '"env"' >> $TASKENV-$SERVICE-deploy-run.sh
+
+    \cp -f $TASKENV-$SERVICE-deploy-run.sh $TASKENV-$SERVICE-deploy-ready.sh
+    sed -n '1,/"image"/p' $TASKENV-$SERVICE-deploy-ready.sh > $TASKENV-$SERVICE-deploy-run.sh
+    cat $SERVICE/deploy/ci-scripts/docker_parameters.txt >> $TASKENV-$SERVICE-deploy-run.sh
+    echo "" >> $TASKENV-$SERVICE-deploy-run.sh
+    sed -n '/"image"/,$p' $TASKENV-$SERVICE-deploy-ready.sh|grep -v '"image"' >> $TASKENV-$SERVICE-deploy-run.sh
 
     # deploy marathon app
     # 出现错误继续执行

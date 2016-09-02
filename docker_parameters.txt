@@ -1,0 +1,22 @@
+			"parameters": [
+			      {
+			        "key": "log-opt",
+			        "value": "syslog-format=rfc5424micro"
+			      },
+			      {
+			        "key": "log-driver",
+			        "value": "syslog"
+			      },
+			      {
+			        "key": "log-opt",
+			        "value": "syslog-address=tcp://10.3.35.20:5011"
+			      },
+			      {
+			        "key": "log-opt",
+			        "value": "tag={{.ID}}/{{ (.ExtraAttributes nil).MARATHON_APP_ID }}/{{ (.ExtraAttributes nil).MESOS_TASK_ID }}"
+			      },
+			      {
+			        "key": "log-opt",
+			        "value": "env=MARATHON_APP_ID,MESOS_TASK_ID"
+			      }
+			    ],
